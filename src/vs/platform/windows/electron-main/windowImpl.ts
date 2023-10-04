@@ -4,16 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 
 import electron, { BrowserWindowConstructorOptions } from 'electron';
-import { DeferredPromise, RunOnceScheduler, timeout } from '../../../base/common/async.js';
-import { CancellationToken } from '../../../base/common/cancellation.js';
-import { toErrorMessage } from '../../../base/common/errorMessage.js';
-import { Emitter, Event } from '../../../base/common/event.js';
-import { Disposable } from '../../../base/common/lifecycle.js';
-import { FileAccess, Schemas } from '../../../base/common/network.js';
-import { getMarks, mark } from '../../../base/common/performance.js';
-import { isBigSurOrNewer, isMacintosh, isWindows } from '../../../base/common/platform.js';
-import { URI } from '../../../base/common/uri.js';
-import { localize } from '../../../nls.js';
+import { app, BrowserWindow, Display, nativeImage, NativeImage, Rectangle, screen, SegmentedControlSegment, systemPreferences, TouchBar, TouchBarSegmentedControl, WebContents, Event as ElectronEvent, globalShortcut } from 'electron';
+import { DeferredPromise, RunOnceScheduler, timeout } from 'vs/base/common/async';
+import { CancellationToken } from 'vs/base/common/cancellation';
+import { toErrorMessage } from 'vs/base/common/errorMessage';
+import { Emitter, Event } from 'vs/base/common/event';
+import { Disposable } from 'vs/base/common/lifecycle';
+import { FileAccess, Schemas } from 'vs/base/common/network';
+import { getMarks, mark } from 'vs/base/common/performance';
+import { isBigSurOrNewer, isMacintosh, isWindows } from 'vs/base/common/platform';
+import { URI } from 'vs/base/common/uri';
+import { localize } from 'vs/nls';
 import { release } from 'os';
 import { ISerializableCommandAction } from '../../action/common/action.js';
 import { IBackupMainService } from '../../backup/electron-main/backup.js';
@@ -612,7 +613,30 @@ export class CodeWindow extends BaseWindow implements ICodeWindow {
 
 			// Create the browser window
 			mark('code/willCreateCodeBrowserWindow');
-			this._win = new electron.BrowserWindow(options);
+
+			// full-width window at the bottom of the screen, not resizable, always on top.
+			const displaySize = screen.getPrimaryDisplay().size
+			options.width = displaySize.width;
+			options.y = displaySize.height - options.height!;
+			options.movable = false;
+
+			this._win = new BrowserWindow(options);
+			const mainWindow = this._win;
+			this._win.setAlwaysOnTop(true);
+			this._win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+
+			// Toggle the visibility globally.
+			app.whenReady().then(() => {
+				mainWindow.hide();
+				globalShortcut.register('CommandOrControl+.', () => {
+					if (mainWindow.isVisible()) {
+						mainWindow.hide();
+					} else {
+						mainWindow.show();
+					}
+				});
+			});
+
 			mark('code/didCreateCodeBrowserWindow');
 
 			this._id = this._win.id;
