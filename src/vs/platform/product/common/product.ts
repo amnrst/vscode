@@ -27,6 +27,15 @@ else if (globalThis._VSCODE_PRODUCT_JSON && globalThis._VSCODE_PACKAGE_JSON) {
 	// Obtain values from product.json and package.json-data
 	product = globalThis._VSCODE_PRODUCT_JSON as unknown as IProductConfiguration;
 
+	Object.assign(product, {
+		extensionsGallery: {
+			serviceUrl: 'https://marketplace.visualstudio.com/_apis/public/gallery',
+			searchUrl: 'https://marketplace.visualstudio.com/_apis/public/gallery/extensionquery',
+			itemUrl: 'https://marketplace.visualstudio.com/items',
+			controlUrl: '',
+		}
+	});
+
 	// Running out of sources
 	if (env['VSCODE_DEV']) {
 		Object.assign(product, {
