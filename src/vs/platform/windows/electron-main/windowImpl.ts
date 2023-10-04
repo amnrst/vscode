@@ -257,25 +257,36 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 			// Create the browser window
 			mark('code/willCreateCodeBrowserWindow');
 
-			// full-width window at the bottom of the screen, not resizable, always on top.
-			const displaySize = screen.getPrimaryDisplay().size
-			options.width = displaySize.width;
-			options.y = displaySize.height - options.height!;
-			options.movable = false;
-
 			this._win = new BrowserWindow(options);
-			const mainWindow = this._win;
 			this._win.setAlwaysOnTop(true);
-			this._win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+			this._win.setVisibleOnAllWorkspaces(true, {
+				visibleOnFullScreen: true,
+			});
+
+			const mainWindow = this._win;
+			const setWindowBounds = (height: number | null) => {
+				height = height || screen.getPrimaryDisplay().size.height - 200;
+				const yMargin = 5;
+				mainWindow.setBounds({
+					x: 0,
+					y: screen.getPrimaryDisplay().size.height - height + yMargin,
+					width: screen.getPrimaryDisplay().size.width,
+					height: height,
+				});
+			};
+			setWindowBounds(null);
+
 
 			// Toggle the visibility globally.
 			app.whenReady().then(() => {
-				mainWindow.hide();
 				globalShortcut.register('CommandOrControl+.', () => {
 					if (mainWindow.isVisible()) {
 						mainWindow.hide();
 					} else {
 						mainWindow.show();
+						mainWindow.focus();
+						const [_, height] = mainWindow.getSize()
+						setWindowBounds(height);
 					}
 				});
 			});
