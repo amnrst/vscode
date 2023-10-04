@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { app, BrowserWindow, Display, Event as ElectronEvent, nativeImage, NativeImage, Rectangle, screen, SegmentedControlSegment, systemPreferences, TouchBar, TouchBarSegmentedControl } from 'electron';
+import { app, BrowserWindow, Display, Event as ElectronEvent, nativeImage, NativeImage, Rectangle, screen, SegmentedControlSegment, systemPreferences, TouchBar, TouchBarSegmentedControl, globalShortcut } from 'electron';
 import { DeferredPromise, RunOnceScheduler, timeout } from 'vs/base/common/async';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
@@ -256,7 +256,30 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 
 			// Create the browser window
 			mark('code/willCreateCodeBrowserWindow');
+
+			// full-width window at the bottom of the screen, not resizable, always on top.
+			const displaySize = screen.getPrimaryDisplay().size
+			options.width = displaySize.width;
+			options.y = displaySize.height - options.height!;
+			options.movable = false;
+
 			this._win = new BrowserWindow(options);
+			const mainWindow = this._win;
+			this._win.setAlwaysOnTop(true);
+			this._win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+
+			// Toggle the visibility globally.
+			app.whenReady().then(() => {
+				mainWindow.hide();
+				globalShortcut.register('CommandOrControl+.', () => {
+					if (mainWindow.isVisible()) {
+						mainWindow.hide();
+					} else {
+						mainWindow.show();
+					}
+				});
+			});
+
 			mark('code/didCreateCodeBrowserWindow');
 
 			this._id = this._win.id;

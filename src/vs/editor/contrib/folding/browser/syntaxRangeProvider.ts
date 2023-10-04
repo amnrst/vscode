@@ -74,7 +74,8 @@ function collectSyntaxRanges(providers: FoldingRangeProvider[], model: ITextMode
 				const nLines = model.getLineCount();
 				for (const r of ranges) {
 					if (r.start > 0 && r.end > r.start && r.end <= nLines) {
-						rangeData.push({ start: r.start, end: r.end, rank: i, kind: r.kind });
+						// vscode by default doesn't include the closing '}' in the folding range.
+						rangeData.push({ start: r.start, end: r.end + 1, rank: i, kind: r.kind });
 					}
 				}
 			}
