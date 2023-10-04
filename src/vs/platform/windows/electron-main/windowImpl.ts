@@ -633,12 +633,13 @@ export class CodeWindow extends BaseWindow implements ICodeWindow {
 			};
 			setWindowBounds(null);
 
-
 			// Toggle the visibility globally.
 			app.whenReady().then(() => {
+				mainWindow.focus();
 				globalShortcut.register('CommandOrControl+.', () => {
 					if (mainWindow.isVisible()) {
 						mainWindow.hide();
+						app.hide();
 					} else {
 						mainWindow.show();
 						mainWindow.focus();
