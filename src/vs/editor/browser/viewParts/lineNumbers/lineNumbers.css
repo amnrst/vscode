@@ -12,6 +12,8 @@
 	vertical-align: middle;
 	box-sizing: border-box;
 	cursor: default;
+	height: 100%;
+	font-size: 80%;
 }
 
 .monaco-editor .relative-current-line-number {

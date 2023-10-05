@@ -2684,19 +2684,22 @@ export class EditorLayoutInfoComputer extends ComputedEditorOption<EditorOption.
 		const showFoldingDecoration = options.get(EditorOption.showFoldingControls) !== 'never';
 
 		let lineDecorationsWidth = options.get(EditorOption.lineDecorationsWidth);
+		lineDecorationsWidth = 1;
 		if (folding && showFoldingDecoration) {
 			lineDecorationsWidth += 16;
 		}
 
 		let lineNumbersWidth = 0;
 		if (showLineNumbers) {
-			const digitCount = Math.max(lineNumbersDigitCount, lineNumbersMinChars);
-			lineNumbersWidth = Math.round(digitCount * maxDigitWidth);
+			lineDecorationsWidth = 4;
+			let digitCount = Math.max(lineNumbersDigitCount, lineNumbersMinChars);
+			digitCount = lineNumbersDigitCount;
+			lineNumbersWidth = Math.round(digitCount * maxDigitWidth * 0.8);
 		}
 
 		let glyphMarginWidth = 0;
 		if (showGlyphMargin) {
-			glyphMarginWidth = lineHeight * env.glyphMarginDecorationLaneCount;
+			glyphMarginWidth = lineHeight * env.glyphMarginDecorationLaneCount * 0.25;
 		}
 
 		let glyphMarginLeft = 0;
