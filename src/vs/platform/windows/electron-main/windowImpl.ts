@@ -633,20 +633,22 @@ export class CodeWindow extends BaseWindow implements ICodeWindow {
 			};
 			setWindowBounds(null);
 
+			const toggleVisiblity = () => {
+				if (mainWindow.isVisible()) {
+					mainWindow.hide();
+					app.hide();
+				} else {
+					mainWindow.show();
+					mainWindow.focus();
+					const [_, height] = mainWindow.getSize()
+					setWindowBounds(height);
+				}
+			};
 			// Toggle the visibility globally.
 			app.whenReady().then(() => {
 				mainWindow.focus();
-				globalShortcut.register('CommandOrControl+.', () => {
-					if (mainWindow.isVisible()) {
-						mainWindow.hide();
-						app.hide();
-					} else {
-						mainWindow.show();
-						mainWindow.focus();
-						const [_, height] = mainWindow.getSize()
-						setWindowBounds(height);
-					}
-				});
+				globalShortcut.register('Command+.', toggleVisiblity);
+				globalShortcut.register('Control+/', toggleVisiblity);
 			});
 
 			mark('code/didCreateCodeBrowserWindow');
