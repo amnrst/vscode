@@ -640,7 +640,7 @@ export class CodeWindow extends BaseWindow implements ICodeWindow {
 				} else {
 					mainWindow.show();
 					mainWindow.focus();
-					const [_, height] = mainWindow.getSize()
+					const [_, height] = mainWindow.getSize();
 					setWindowBounds(height);
 				}
 			};
