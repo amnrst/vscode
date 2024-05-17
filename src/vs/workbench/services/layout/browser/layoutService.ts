@@ -338,7 +338,7 @@ export function shouldShowCustomTitleBar(configurationService: IConfigurationSer
 
 	if (!isWeb) {
 		const showCustomTitleBar = configurationService.getValue<CustomTitleBarVisibility>(TitleBarSetting.CUSTOM_TITLE_BAR_VISIBILITY);
-		if (showCustomTitleBar === CustomTitleBarVisibility.NEVER && nativeTitleBarEnabled || showCustomTitleBar === CustomTitleBarVisibility.WINDOWED && inFullscreen) {
+		if (showCustomTitleBar === CustomTitleBarVisibility.NEVER || showCustomTitleBar === CustomTitleBarVisibility.WINDOWED && inFullscreen) {
 			return false;
 		}
 	}
